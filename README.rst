@@ -5,8 +5,12 @@
 Open vSwitch
 ============
 
-.. image:: https://travis-ci.org/openvswitch/ovs.png
-    :target: https://travis-ci.org/openvswitch/ovs
+.. image:: https://travis-ci.org/MWGA/ovs.svg?branch=master
+    :target: https://travis-ci.org/MWGA/ovs
+|    
+.. image:: https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png
+    :target: https://zenhub.com
+    
 
 What is Open vSwitch?
 ---------------------
