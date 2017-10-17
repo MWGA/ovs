@@ -1,6 +1,5 @@
 language: c
 compiler:
-  - gcc
   - clang
 
 os:
@@ -38,15 +37,4 @@ env:
   - KERNEL=3.10.107
   - TESTSUITE=1 LIBS=-ljemalloc
 
-matrix:
-  include:
-    - os: osx
-      compiler: clang
-      env: OPTS="--disable-ssl"
-
 script: ./.travis/${TRAVIS_OS_NAME}-build.sh $OPTS
-
-notifications:
-  email:
-    recipients:
-      - ovs-build@openvswitch.org
