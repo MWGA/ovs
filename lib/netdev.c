@@ -363,6 +363,8 @@ netdev_open(const char *name, const char *type, struct netdev **netdevp)
     struct netdev *netdev;
     int error = 0;
 
+    VLOG_ERR("Opening netdev_open %s", name);
+
     if (!name[0]) {
         /* Reject empty names.  This saves the providers having to do this.  At
          * least one screwed this up: the netdev-linux "tap" implementation
@@ -643,7 +645,7 @@ netdev_rxq_open(struct netdev *netdev, struct netdev_rxq **rxp, int id)
     OVS_EXCLUDED(netdev_mutex)
 {
     int error;
-
+    VLOG_ERR("Opening netdev_rxq_open %s", netdev->name);
     if (netdev->netdev_class->rxq_alloc && id < netdev->n_rxq) {
         struct netdev_rxq *rx = netdev->netdev_class->rxq_alloc();
         if (rx) {
