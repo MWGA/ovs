@@ -10432,6 +10432,8 @@ static bool
 ofputil_is_bundlable(enum ofptype type)
 {
     switch (type) {
+    case OFPTYPE_WIFI_CONTROL:
+        break;
         /* Minimum required by OpenFlow 1.4. */
     case OFPTYPE_PORT_MOD:
     case OFPTYPE_FLOW_MOD:

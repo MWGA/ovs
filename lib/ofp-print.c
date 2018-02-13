@@ -3453,6 +3453,8 @@ ofp_to_string__(const struct ofp_header *oh,
 
     enum ofptype type = ofptype_from_ofpraw(raw);
     switch (type) {
+    case OFPTYPE_WIFI_CONTROL:
+        break;
     case OFPTYPE_GROUP_STATS_REQUEST:
         ofp_print_stats(string, oh);
         ofp_print_ofpst_group_request(string, oh);

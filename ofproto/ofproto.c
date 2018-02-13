@@ -8027,6 +8027,8 @@ handle_openflow__(struct ofconn *ofconn, const struct ofpbuf *msg)
     }
 
     switch (type) {
+    case OFPTYPE_WIFI_CONTROL:
+        return 0;
         /* OpenFlow requests. */
     case OFPTYPE_ECHO_REQUEST:
         return handle_echo_request(ofconn, oh);

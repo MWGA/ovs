@@ -1352,6 +1352,7 @@ is_admitted_msg(const struct ofpbuf *b)
     }
 
     switch (type) {
+    case OFPTYPE_WIFI_CONTROL:
     case OFPTYPE_HELLO:
     case OFPTYPE_ERROR:
     case OFPTYPE_ECHO_REQUEST:

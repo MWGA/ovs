@@ -281,6 +281,12 @@ enum ofpraw {
     /* ONFT 1.3 (2301): struct ofp14_bundle_ctrl_msg, uint8_t[]. */
     OFPRAW_ONFT13_BUNDLE_ADD_MESSAGE,
 
+    /* ONFT 1.4 (2400): struct ofp14_bundle_ctrl_msg, uint8_t[]. */
+     OFPRAW_ONFT14_WIFI_CONTROL,
+
+
+
+
 /* Standard statistics. */
 
     /* OFPST 1.0+ (0): void. */
@@ -629,6 +635,7 @@ enum ofptype {
     OFPTYPE_BUNDLE_ADD_MESSAGE,   /* OFPRAW_OFPT14_BUNDLE_ADD_MESSAGE.
                                    * OFPRAW_ONFT13_BUNDLE_ADD_MESSAGE. */
 
+    OFPTYPE_WIFI_CONTROL,           /* OFPRAW_ONFT14_WIFI_CONTROL. */
     /* Statistics. */
     OFPTYPE_DESC_STATS_REQUEST,      /* OFPRAW_OFPST_DESC_REQUEST. */
     OFPTYPE_DESC_STATS_REPLY,        /* OFPRAW_OFPST_DESC_REPLY. */
