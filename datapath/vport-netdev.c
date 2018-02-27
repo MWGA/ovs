@@ -42,6 +42,7 @@ static struct vport_ops ovs_netdev_vport_ops;
 /* Must be called with rcu_read_lock. */
 void netdev_port_receive(struct sk_buff *skb, struct ip_tunnel_info *tun_info)
 {
+	VLOG_ERR("received on port");
 	struct vport *vport;
 
 	vport = ovs_netdev_get_vport(skb->dev);
@@ -71,6 +72,7 @@ error:
 /* Called with rcu_read_lock and bottom-halves disabled. */
 static rx_handler_result_t netdev_frame_hook(struct sk_buff **pskb)
 {
+	VLOG_ERR("receive frame");
 	struct sk_buff *skb = *pskb;
 
 	if (unlikely(skb->pkt_type == PACKET_LOOPBACK))

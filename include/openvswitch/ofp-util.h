@@ -228,6 +228,7 @@ uint32_t ofputil_versions_from_strings(char ** const s, size_t count);
 bool ofputil_decode_hello(const struct ofp_header *,
                           uint32_t *allowed_versions);
 struct ofpbuf *ofputil_encode_hello(uint32_t version_bitmap);
+struct ofpbuf *ofputil_encode_hello_custom(uint32_t version_bitmap);
 
 struct ofpbuf *ofputil_encode_set_protocol(enum ofputil_protocol current,
                                            enum ofputil_protocol want,

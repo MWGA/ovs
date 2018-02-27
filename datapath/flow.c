@@ -54,6 +54,7 @@
 
 u64 ovs_flow_used_time(unsigned long flow_jiffies)
 {
+    VLOG_DBG("nieco");
 	struct timespec cur_ts;
 	u64 cur_ms, idle_ms;
 

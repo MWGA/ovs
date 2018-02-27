@@ -4472,6 +4472,20 @@ ofctl_encode_hello(struct ovs_cmdl_context *ctx)
     ofpbuf_delete(hello);
 }
 
+/* "encode-hello-custom BITMAP...": Encodes each BITMAP as an OpenFlow hello message
+ * and dumps each message in hex.  */
+static void
+ofctl_encode_hello_custom(struct ovs_cmdl_context *ctx)
+{
+    uint32_t bitmap = strtol(ctx->argv[1], NULL, 0);
+    struct ofpbuf *hello;
+
+    hello = ofputil_encode_hello_custom(bitmap);
+    ovs_hex_dump(stdout, hello->data, hello->size, 0, false);
+    ofp_print(stdout, hello->data, hello->size, NULL, verbosity);
+    ofpbuf_delete(hello);
+}
+
 static void
 ofctl_parse_key_value(struct ovs_cmdl_context *ctx)
 {
@@ -4624,6 +4638,7 @@ static const struct ovs_cmdl_command all_commands[] = {
     { "encode-error-reply", NULL, 2, 2, ofctl_encode_error_reply, OVS_RW },
     { "ofp-print", NULL, 1, 2, ofctl_ofp_print, OVS_RW },
     { "encode-hello", NULL, 1, 1, ofctl_encode_hello, OVS_RW },
+    { "encode-hello-custom", NULL, 1, 1, ofctl_encode_hello_custom, OVS_RW },
     { "parse-key-value", NULL, 1, INT_MAX, ofctl_parse_key_value, OVS_RW },
 
     { NULL, NULL, 0, 0, NULL, OVS_RO },

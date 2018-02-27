@@ -407,10 +407,31 @@ vcs_connecting(struct vconn *vconn)
 static void
 vcs_send_hello(struct vconn *vconn)
 {
+    VLOG_ERR("vconn.c - vcs send hello");
     struct ofpbuf *b;
     int retval;
 
     b = ofputil_encode_hello(vconn->allowed_versions);
+    retval = do_send(vconn, b);
+    if (!retval) {
+        vconn->state = VCS_RECV_HELLO;
+    } else {
+        ofpbuf_delete(b);
+        if (retval != EAGAIN) {
+            vconn->state = VCS_DISCONNECTED;
+            vconn->error = retval;
+        }
+    }
+}
+
+static void
+vcs_send_hello_custom(struct vconn *vconn)
+{
+    VLOG_ERR("vconn.c - vcs send hello custom --- HELLO_CUSTOM");
+    struct ofpbuf *b;
+    int retval;
+
+    b = ofputil_encode_hello_custom(vconn->allowed_versions);
     retval = do_send(vconn, b);
     if (!retval) {
         vconn->state = VCS_RECV_HELLO;
@@ -555,6 +576,9 @@ vconn_connect(struct vconn *vconn)
 
         case VCS_SEND_HELLO:
             vcs_send_hello(vconn);
+                vconn->name="HELLO CUSTOM";
+                vconn->version=2401;
+                vcs_send_hello_custom(vconn);
             break;
 
         case VCS_RECV_HELLO:

@@ -792,6 +792,7 @@ int
 netdev_send(struct netdev *netdev, int qid, struct dp_packet_batch *batch,
             bool may_steal, bool concurrent_txq)
 {
+    VLOG_ERR("sending");
     int error = netdev->netdev_class->send(netdev, qid, batch, may_steal,
                                            concurrent_txq);
     if (!error) {

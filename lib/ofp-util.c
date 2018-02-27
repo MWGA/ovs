@@ -1362,6 +1362,35 @@ ofputil_encode_hello(uint32_t allowed_versions)
     return msg;
 }
 
+
+
+/* Create an OFPT_HELLO message that expresses support for the OpenFlow
+ * versions in the 'allowed_versions' bitmaps and returns the message. */
+struct ofpbuf *
+ofputil_encode_hello_custom(uint32_t allowed_versions)
+{
+    enum ofp_version ofp_version;
+    struct ofpbuf *msg;
+
+    ofp_version = leftmost_1bit_idx(allowed_versions);
+    msg = ofpraw_alloc(OFPRAW_ONFT14_HELLO_CUSTOM, ofp_version, 2401);
+
+    if (should_send_version_bitmap(allowed_versions)) {
+        struct ofp_hello_elem_header *oheh;
+        uint16_t map_len;
+
+        map_len = sizeof allowed_versions;
+        oheh = ofpbuf_put_zeros(msg, ROUND_UP(map_len + sizeof *oheh, 8));
+        oheh->type = htons(OFPHET_VERSIONBITMAP);
+        oheh->length = htons(map_len + sizeof *oheh);
+        *ALIGNED_CAST(ovs_be32 *, oheh + 1) = htonl(allowed_versions);
+
+        ofpmsg_update_length(msg);
+    }
+
+    return msg;
+}
+
 /* Returns an OpenFlow message that, sent on an OpenFlow connection whose
  * protocol is 'current', at least partly transitions the protocol to 'want'.
  * Stores in '*next' the protocol that will be in effect on the OpenFlow
@@ -7172,6 +7201,7 @@ make_echo_request(enum ofp_version ofp_version)
 struct ofpbuf *
 make_echo_reply(const struct ofp_header *rq)
 {
+    VLOG_ERR("ECHo replu");
     struct ofpbuf rq_buf = ofpbuf_const_initializer(rq, ntohs(rq->length));
     ofpraw_pull_assert(&rq_buf);
 
@@ -10433,6 +10463,7 @@ ofputil_is_bundlable(enum ofptype type)
 {
     switch (type) {
     case OFPTYPE_WIFI_CONTROL:
+
         break;
         /* Minimum required by OpenFlow 1.4. */
     case OFPTYPE_PORT_MOD:
@@ -10483,6 +10514,7 @@ ofputil_is_bundlable(enum ofptype type)
     case OFPTYPE_BUNDLE_CONTROL:
     case OFPTYPE_BUNDLE_ADD_MESSAGE:
     case OFPTYPE_HELLO:
+    case OFPTYPE_HELLO_CUSTOM:
     case OFPTYPE_ERROR:
     case OFPTYPE_FEATURES_REPLY:
     case OFPTYPE_GET_CONFIG_REPLY:

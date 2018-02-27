@@ -8171,6 +8171,7 @@ handle_openflow__(struct ofconn *ofconn, const struct ofpbuf *msg)
         return handle_nxt_ct_flush_zone(ofconn, oh);
 
     case OFPTYPE_HELLO:
+    case OFPTYPE_HELLO_CUSTOM:
     case OFPTYPE_ERROR:
     case OFPTYPE_FEATURES_REPLY:
     case OFPTYPE_GET_CONFIG_REPLY:

@@ -3499,6 +3499,10 @@ ofp_to_string__(const struct ofp_header *oh,
         ofp_print_hello(string, oh);
         break;
 
+    case OFPTYPE_HELLO_CUSTOM:
+        ofp_print_hello(string, oh);
+        break;
+
     case OFPTYPE_ERROR:
         ofp_print_error_msg(string, oh, port_map);
         break;

@@ -117,6 +117,10 @@ enum ofpraw {
     /* OFPT <all> (0): uint8_t[]. */
     OFPRAW_OFPT_HELLO,
 
+    /* ONFT 1.4 (2401): uint8_t[]. */
+    OFPRAW_ONFT14_HELLO_CUSTOM,
+
+
     /* OFPT <all> (1): struct ofp_error_msg, uint8_t[]. */
     OFPRAW_OFPT_ERROR,
 
@@ -282,7 +286,7 @@ enum ofpraw {
     OFPRAW_ONFT13_BUNDLE_ADD_MESSAGE,
 
     /* ONFT 1.4 (2400): struct ofp14_bundle_ctrl_msg, uint8_t[]. */
-     OFPRAW_ONFT14_WIFI_CONTROL,
+    OFPRAW_ONFT14_WIFI_CONTROL,
 
 
 
@@ -543,6 +547,7 @@ enum ofpraw ofpraw_stats_request_to_reply(enum ofpraw, uint8_t version);
 enum ofptype {
     /* Immutable messages. */
     OFPTYPE_HELLO,               /* OFPRAW_OFPT_HELLO. */
+    OFPTYPE_HELLO_CUSTOM,        /* OFPRAW_ONFT14_HELLO_CUSTOM. */
     OFPTYPE_ERROR,               /* OFPRAW_OFPT_ERROR. */
     OFPTYPE_ECHO_REQUEST,        /* OFPRAW_OFPT_ECHO_REQUEST. */
     OFPTYPE_ECHO_REPLY,          /* OFPRAW_OFPT_ECHO_REPLY. */

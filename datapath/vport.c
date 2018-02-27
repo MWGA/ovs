@@ -322,6 +322,7 @@ void ovs_vport_del(struct vport *vport)
  */
 void ovs_vport_get_stats(struct vport *vport, struct ovs_vport_stats *stats)
 {
+	VLOG_DBG("statistiky");
 	const struct rtnl_link_stats64 *dev_stats;
 	struct rtnl_link_stats64 temp;
 
@@ -481,6 +482,7 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport, struct sk_buff *skb)
 int ovs_vport_receive(struct vport *vport, struct sk_buff *skb,
 		      const struct ip_tunnel_info *tun_info)
 {
+	VLOG_DBG("RECEIVE nieco ");
 	struct sw_flow_key key;
 	int error;
 
