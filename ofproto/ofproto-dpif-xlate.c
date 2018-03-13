@@ -5313,6 +5313,7 @@ reversible_actions(const struct ofpact *ofpacts, size_t ofpacts_len)
         case OFPACT_SET_TUNNEL:
         case OFPACT_SET_VLAN_PCP:
         case OFPACT_SET_VLAN_VID:
+        case OFPACT_SET_HELLO_CUSTOM:
         case OFPACT_STACK_POP:
         case OFPACT_STACK_PUSH:
         case OFPACT_STRIP_VLAN:
@@ -5561,6 +5562,7 @@ freeze_unroll_actions(const struct ofpact *a, const struct ofpact *end,
         case OFPACT_GOTO_TABLE:
         case OFPACT_ENQUEUE:
         case OFPACT_SET_VLAN_VID:
+        case OFPACT_SET_HELLO_CUSTOM:
         case OFPACT_SET_VLAN_PCP:
         case OFPACT_STRIP_VLAN:
         case OFPACT_PUSH_VLAN:
@@ -6038,6 +6040,7 @@ recirc_for_mpls(const struct ofpact *a, struct xlate_ctx *ctx)
     case OFPACT_OUTPUT_REG:
     /* Set actions that don't touch L3+ fields do not require recirculation. */
     case OFPACT_SET_VLAN_VID:
+    case OFPACT_SET_HELLO_CUSTOM:
     case OFPACT_SET_VLAN_PCP:
     case OFPACT_SET_ETH_SRC:
     case OFPACT_SET_ETH_DST:
@@ -6233,8 +6236,20 @@ do_xlate_actions(const struct ofpact *ofpacts, size_t ofpacts_len,
                     (htons(ofpact_get_SET_VLAN_VID(a)->vlan_vid) |
                      htons(VLAN_CFI));
             }
+        break;
+        case OFPACT_SET_HELLO_CUSTOM:
+            wc->masks.vlans[0].tci |= htons(VLAN_VID_MASK | VLAN_CFI);
+            if (flow->vlans[0].tci & htons(VLAN_CFI) ||
+                ofpact_get_SET_HELLO_CUSTOM(a)->push_vlan_if_needed) {
+                if (!flow->vlans[0].tpid) {
+                    flow->vlans[0].tpid = htons(ETH_TYPE_VLAN);
+                }
+                flow->vlans[0].tci &= ~htons(VLAN_VID_MASK);
+                flow->vlans[0].tci |=
+                        (htons(ofpact_get_SET_HELLO_CUSTOM(a)->vlan_vid) |
+                         htons(VLAN_CFI));
+            }
             break;
-
         case OFPACT_SET_VLAN_PCP:
             wc->masks.vlans[0].tci |= htons(VLAN_PCP_MASK | VLAN_CFI);
             if (flow->vlans[0].tci & htons(VLAN_CFI) ||

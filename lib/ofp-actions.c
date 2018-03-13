@@ -134,6 +134,10 @@ enum ofp_raw_action_type {
     /* OF1.1+(0): struct ofp11_action_output. */
     OFPAT_RAW11_OUTPUT,
 
+
+    /* OF1.4(2401): uint16_t. */
+     OFPAT_RAW14_SET_HELLO_CUSTOM,
+
     /* OF1.0(1): uint16_t. */
     OFPAT_RAW10_SET_VLAN_VID,
     /* OF1.0(2): uint8_t. */
@@ -437,6 +441,7 @@ ofpact_next_flattened(const struct ofpact *ofpact)
     case OFPACT_BUNDLE:
     case OFPACT_SET_FIELD:
     case OFPACT_SET_VLAN_VID:
+    case OFPACT_SET_HELLO_CUSTOM:
     case OFPACT_SET_VLAN_PCP:
     case OFPACT_STRIP_VLAN:
     case OFPACT_PUSH_VLAN:
@@ -1489,11 +1494,32 @@ decode_set_vlan_vid(uint16_t vid, bool push_vlan_if_needed, struct ofpbuf *out)
 }
 
 static enum ofperr
+decode_set_hello_custom(uint16_t vid, bool push_vlan_if_needed, struct ofpbuf *out)
+{
+    if (vid & ~0xfff) {
+        return OFPERR_OFPBAC_BAD_ARGUMENT;
+    } else {
+        struct ofpact_hello_custom *vlan_vid = ofpact_put_SET_HELLO_CUSTOM(out);
+        vlan_vid->vlan_vid = vid;
+        vlan_vid->push_vlan_if_needed = push_vlan_if_needed;
+        return 0;
+    }
+}
+
+static enum ofperr
 decode_OFPAT_RAW10_SET_VLAN_VID(uint16_t vid,
                                 enum ofp_version ofp_version OVS_UNUSED,
                                 struct ofpbuf *out)
 {
     return decode_set_vlan_vid(vid, true, out);
+}
+
+static enum ofperr
+decode_OFPAT_RAW14_SET_HELLO_CUSTOM(uint16_t vid,
+                                    enum ofp_version ofp_version OVS_UNUSED,
+                                    struct ofpbuf *out)
+{
+    return decode_set_hello_custom(vid, true, out);
 }
 
 static enum ofperr
@@ -1519,6 +1545,30 @@ encode_SET_VLAN_VID(const struct ofpact_vlan_vid *vlan_vid,
     }
 
     if (ofp_version == OFP10_VERSION) {
+        put_OFPAT10_SET_VLAN_VID(out, vid);
+    } else if (ofp_version == OFP11_VERSION) {
+        put_OFPAT11_SET_VLAN_VID(out, vid);
+    } else {
+        put_set_field(out, ofp_version, MFF_VLAN_VID, vid | OFPVID12_PRESENT);
+    }
+}
+
+
+static void
+encode_SET_HELLO_CUSTOM(const struct ofpact_hello_custom *vlan_vid,
+                    enum ofp_version ofp_version, struct ofpbuf *out)
+{
+    uint16_t vid = vlan_vid->vlan_vid;
+
+    /* Push a VLAN tag, if none is present and this form of the action calls
+     * for such a feature. */
+    if (ofp_version > OFP14_VERSION
+        && vlan_vid->push_vlan_if_needed
+        && !vlan_vid->flow_has_vlan) {
+        put_OFPAT11_PUSH_VLAN(out, htons(ETH_TYPE_VLAN_8021Q));
+    }
+
+    if (ofp_version == OFP14_VERSION) {
         put_OFPAT10_SET_VLAN_VID(out, vid);
     } else if (ofp_version == OFP11_VERSION) {
         put_OFPAT11_SET_VLAN_VID(out, vid);
@@ -1558,6 +1608,15 @@ parse_SET_VLAN_VID(char *arg,
     return parse_set_vlan_vid(arg, ofpacts, false);
 }
 
+static char * OVS_WARN_UNUSED_RESULT
+parse_SET_HELLO_CUSTOM(char *arg,
+                   const struct ofputil_port_map *port_map OVS_UNUSED,
+                   struct ofpbuf *ofpacts,
+                   enum ofputil_protocol *usable_protocols OVS_UNUSED)
+{
+    return parse_set_vlan_vid(arg, ofpacts, false);
+}
+
 static void
 format_SET_VLAN_VID(const struct ofpact_vlan_vid *a,
                     const struct ofputil_port_map *port_map OVS_UNUSED,
@@ -1565,6 +1624,15 @@ format_SET_VLAN_VID(const struct ofpact_vlan_vid *a,
 {
     ds_put_format(s, "%s%s:%s%"PRIu16, colors.param,
                   a->push_vlan_if_needed ? "mod_vlan_vid" : "set_vlan_vid",
+                  colors.end, a->vlan_vid);
+}
+static void
+format_SET_HELLO_CUSTOM(const struct ofpact_hello_custom *a,
+                    const struct ofputil_port_map *port_map OVS_UNUSED,
+                    struct ds *s)
+{
+    ds_put_format(s, "%s%s:%s%"PRIu16, colors.param,
+                  a->push_vlan_if_needed ? "mod_vlan_vid" : "set_hello_custom",
                   colors.end, a->vlan_vid);
 }
 
@@ -7113,6 +7181,7 @@ ofpact_is_set_or_move_action(const struct ofpact *a)
     case OFPACT_SET_TUNNEL:
     case OFPACT_SET_VLAN_PCP:
     case OFPACT_SET_VLAN_VID:
+    case OFPACT_SET_HELLO_CUSTOM:
     case OFPACT_ENCAP:
     case OFPACT_DECAP:
         return true;
@@ -7189,6 +7258,7 @@ ofpact_is_allowed_in_actions_set(const struct ofpact *a)
     case OFPACT_SET_TUNNEL:
     case OFPACT_SET_VLAN_PCP:
     case OFPACT_SET_VLAN_VID:
+    case OFPACT_SET_HELLO_CUSTOM:
     case OFPACT_STRIP_VLAN:
     case OFPACT_ENCAP:
     case OFPACT_DECAP:
@@ -7405,6 +7475,7 @@ ovs_instruction_type_from_ofpact_type(enum ofpact_type type)
     case OFPACT_OUTPUT_TRUNC:
     case OFPACT_BUNDLE:
     case OFPACT_SET_VLAN_VID:
+    case OFPACT_SET_HELLO_CUSTOM:
     case OFPACT_SET_VLAN_PCP:
     case OFPACT_STRIP_VLAN:
     case OFPACT_PUSH_VLAN:
@@ -7854,6 +7925,19 @@ ofpact_check__(enum ofputil_protocol *usable_protocols, struct ofpact *a,
          * OpenFlow 1.1+ if need be. */
         ofpact_get_SET_VLAN_VID(a)->flow_has_vlan =
             (flow->vlans[0].tci & htons(VLAN_CFI)) == htons(VLAN_CFI);
+        if (!(flow->vlans[0].tci & htons(VLAN_CFI)) &&
+            !ofpact_get_SET_VLAN_VID(a)->push_vlan_if_needed) {
+            inconsistent_match(usable_protocols);
+        }
+        /* Temporary mark that we have a vlan tag. */
+        flow->vlans[0].tci |= htons(VLAN_CFI);
+        return 0;
+
+    case OFPACT_SET_HELLO_CUSTOM:
+        /* Remember if we saw a vlan tag in the flow to aid translating to
+         * OpenFlow 1.1+ if need be. */
+        ofpact_get_SET_HELLO_CUSTOM(a)->flow_has_vlan =
+                (flow->vlans[0].tci & htons(VLAN_CFI)) == htons(VLAN_CFI);
         if (!(flow->vlans[0].tci & htons(VLAN_CFI)) &&
             !ofpact_get_SET_VLAN_VID(a)->push_vlan_if_needed) {
             inconsistent_match(usable_protocols);
@@ -8477,6 +8561,7 @@ get_ofpact_map(enum ofp_version version)
     /* OpenFlow 1.2, 1.3, and 1.4 actions. */
     static const struct ofpact_map of12[] = {
         { OFPACT_OUTPUT, 0 },
+        { OFPACT_SET_HELLO_CUSTOM, 2401 },
         /* OFPAT_COPY_TTL_OUT (11) not supported. */
         /* OFPAT_COPY_TTL_IN (12) not supported. */
         { OFPACT_SET_MPLS_TTL, 15 },
@@ -8579,6 +8664,7 @@ ofpact_outputs_to_port(const struct ofpact *ofpact, ofp_port_t port)
     case OFPACT_OUTPUT_TRUNC:
     case OFPACT_BUNDLE:
     case OFPACT_SET_VLAN_VID:
+    case OFPACT_SET_HELLO_CUSTOM:
     case OFPACT_SET_VLAN_PCP:
     case OFPACT_STRIP_VLAN:
     case OFPACT_PUSH_VLAN:

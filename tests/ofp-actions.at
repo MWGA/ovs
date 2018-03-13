@@ -364,6 +364,9 @@ AT_DATA([test-data], [dnl
 # actions=set_vlan_vid:9
 0001 0008 0009 0000
 
+# actions=set_hello_custom:2401
+0001 0008 2401 0000
+
 # actions=set_vlan_pcp:6
 0002 0008 06 000000
 

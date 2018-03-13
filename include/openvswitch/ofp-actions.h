@@ -71,6 +71,7 @@ struct vl_mff_map;
     /* Header changes. */                                               \
     OFPACT(SET_FIELD,       ofpact_set_field,   ofpact, "set_field")    \
     OFPACT(SET_VLAN_VID,    ofpact_vlan_vid,    ofpact, "set_vlan_vid") \
+    OFPACT(SET_HELLO_CUSTOM, ofpact_hello_custom, ofpact, "set_hello_custom") \
     OFPACT(SET_VLAN_PCP,    ofpact_vlan_pcp,    ofpact, "set_vlan_pcp") \
     OFPACT(STRIP_VLAN,      ofpact_null,        ofpact, "strip_vlan")   \
     OFPACT(PUSH_VLAN,       ofpact_push_vlan,   ofpact, "push_vlan")    \
@@ -384,6 +385,20 @@ struct ofpact_vlan_vid {
     bool push_vlan_if_needed;   /* OF 1.0 semantics if true. */
     bool flow_has_vlan;         /* VLAN present at action validation time? */
 };
+
+/* OFPACT_SET_HELLO_CUSTOM.
+ *
+ *
+ *
+ *
+ * Used for OFPAT14_SET_HELLO_CUSTOM. */
+struct ofpact_hello_custom {
+    struct ofpact ofpact;
+    uint16_t vlan_vid;          /* VLAN VID in low 12 bits, 0 in other bits. */
+    bool push_vlan_if_needed;   /* OF 1.0 semantics if true. */
+    bool flow_has_vlan;         /* VLAN present at action validation time? */
+};
+
 
 /* OFPACT_SET_VLAN_PCP.
  *
