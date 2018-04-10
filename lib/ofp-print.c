@@ -3499,9 +3499,18 @@ ofp_to_string__(const struct ofp_header *oh,
         ofp_print_hello(string, oh);
         break;
 
-    case OFPTYPE_HELLO_CUSTOM:
-        ofp_print_hello(string, oh);
-        break;
+        case OFPTYPE_HELLO_CUSTOM:
+            ofp_print_hello(string, oh);
+            break;
+
+        case OFPTYPE_ADD_VAP_CONTEXT:
+        case OFPTYPE_REMOVE_VAP_CONTEXT:
+        case OFPTYPE_ASSOCIATION_INFORMATION:
+        case OFPTYPE_CONFIGURATION:
+        case OFPTYPE_PROBE_INFO:
+            ofp_print_hello(string, oh);
+            break;
+
 
     case OFPTYPE_ERROR:
         ofp_print_error_msg(string, oh, port_map);

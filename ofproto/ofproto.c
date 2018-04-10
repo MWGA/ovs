@@ -8170,6 +8170,11 @@ handle_openflow__(struct ofconn *ofconn, const struct ofpbuf *msg)
     case OFPTYPE_CT_FLUSH_ZONE:
         return handle_nxt_ct_flush_zone(ofconn, oh);
 
+    case OFPTYPE_ADD_VAP_CONTEXT:
+    case OFPTYPE_REMOVE_VAP_CONTEXT:
+    case OFPTYPE_ASSOCIATION_INFORMATION:
+    case OFPTYPE_CONFIGURATION:
+    case OFPTYPE_PROBE_INFO:
     case OFPTYPE_HELLO:
     case OFPTYPE_HELLO_CUSTOM:
     case OFPTYPE_ERROR:

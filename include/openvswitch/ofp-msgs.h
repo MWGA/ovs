@@ -117,7 +117,7 @@ enum ofpraw {
     /* OFPT <all> (0): uint8_t[]. */
     OFPRAW_OFPT_HELLO,
 
-    /* ONFT 1.4 (2401): uint8_t[]. */
+    /* ONFT 1.4 (4): uint8_t[]. */
     OFPRAW_ONFT14_HELLO_CUSTOM,
 
 
@@ -134,6 +134,27 @@ enum ofpraw {
  *
  * The meanings of these messages can (and often do) change from one version
  * of OpenFlow to another. */
+
+/*
+ * MWGA
+ */
+    /* MWGA 1.4 (4): struct  of_add_vap_context_msg. */
+            OFPRAW_MWGA_ADD_VAP_CONTEXT_MWGA,
+
+    /* MWGA 1.4 (5): struct  of_remove_vap_context_msg. */
+            OFPRAW_MWGA_REMOVE_VAP_CONTEXT_MWGA,
+
+    /* MWGA 1.4 (2): struct  of_association_information_msg. */
+            OFPRAW_MWGA_ASSOCIATION_INFORMATION_MWGA,
+
+    /* MWGA 1.4 (0): struct  of_configuration_msg. */
+            OFPRAW_MWGA_CONFIGURATION_MWGA,
+
+    /* MWGA 1.4 (1): struct  of_probe_information_msg. */
+            OFPRAW_MWGA_PROBE_INFO_MWGA,
+
+
+
 
     /* OFPT 1.0+ (5): void. */
     OFPRAW_OFPT_FEATURES_REQUEST,
@@ -545,6 +566,14 @@ enum ofpraw ofpraw_stats_request_to_reply(enum ofpraw, uint8_t version);
  * simply to list each OFPRAW_* enumeration constant for a given OFPTYPE_*,
  * each followed by a period. */
 enum ofptype {
+
+    /* MWGA */
+    OFPTYPE_ADD_VAP_CONTEXT,    /* OFPRAW_MWGA_ADD_VAP_CONTEXT_MWGA. */
+    OFPTYPE_REMOVE_VAP_CONTEXT, /* OFPRAW_MWGA_REMOVE_VAP_CONTEXT_MWGA */
+    OFPTYPE_ASSOCIATION_INFORMATION, /* OFPRAW_MWGA_ASSOCIATION_INFORMATION_MWGA */
+    OFPTYPE_CONFIGURATION, /* OFPRAW_MWGA_CONFIGURATION_MWGA */
+    OFPTYPE_PROBE_INFO, /* OFPRAW_MWGA_PROBE_INFO_MWGA */
+
     /* Immutable messages. */
     OFPTYPE_HELLO,               /* OFPRAW_OFPT_HELLO. */
     OFPTYPE_HELLO_CUSTOM,        /* OFPRAW_ONFT14_HELLO_CUSTOM. */

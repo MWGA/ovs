@@ -90,6 +90,75 @@ struct ofp14_port {
 OFP_ASSERT(sizeof(struct ofp14_port) == 40);
 
 
+/*
+ * MWGA
+ * */
+
+struct of_add_vap_context_msg{
+    uint8_t version;
+    uint8_t type;
+    uint8_t length[2];
+    uint8_t xid[4];
+    uint8_t experimenter[4];
+    uint8_t subtype[4];
+    uint8_t BSSID[8];
+    uint8_t MAC_STA[8];
+    uint8_t IP_STA[4];
+    uint8_t Length_SSID;
+    uint8_t SSID[16];
+    uint8_t padding[3];
+};
+
+struct of_association_information_msg {
+    uint8_t version;
+    uint8_t type;
+    uint8_t length[2];
+    uint8_t xid[4];
+    uint8_t experimenter[4];
+    uint8_t subtype[4];
+    uint8_t MAC_STA[8];
+    uint8_t STATUS_CODE[2];
+    uint8_t padding[2];
+};
+
+struct of_configuration_msg {
+    uint8_t version;
+    uint8_t type;
+    uint8_t length[2];
+    uint8_t xid[4];
+    uint8_t experimenter[4];
+    uint8_t subtype[4];
+    uint8_t Channel;
+    uint8_t Length_SSID;
+    uint8_t SSID[8];
+    uint8_t padding[2];
+};
+
+struct of_probe_information_msg {
+    uint8_t version;
+    uint8_t type;
+    uint8_t length[2];
+    uint8_t xid[4];
+    uint8_t experimenter[4];
+    uint8_t subtype[4];
+    uint8_t MAC_STA[8];
+};
+
+struct of_remove_vap_context_msg {
+    uint8_t version;
+    uint8_t type;
+    uint8_t length[2];
+    uint8_t xid[4];
+    uint8_t experimenter[4];
+    uint8_t subtype[4];
+    uint8_t BSSID[8];
+    uint8_t MAC_STA[8];
+};
+
+
+
+
+
 /* ## -------------- ## */
 /* ## ofp14_port_mod ## */
 /* ## -------------- ## */
